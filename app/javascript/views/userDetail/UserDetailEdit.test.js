@@ -242,6 +242,16 @@ describe('UserDetailEdit', () => {
       expect(onInputChangeSpy).toHaveBeenCalledWith('phone_number', 3094405055)
     })
 
+    it('#PhoneNumber, handleInputChange function is called & returns empty', () => {
+      wrapper
+        .find('InputComponent')
+        .at(1)
+        .simulate('change', {
+          target: { value: 'Hello' },
+        })
+      expect(onInputChangeSpy).toHaveBeenCalledWith('phone_number', '')
+    })
+
     it('#PhoneExtensionNumber, handleInputChange function is called when onChange event triggered', () => {
       wrapper
         .find('InputComponent')
@@ -269,7 +279,7 @@ describe('UserDetailEdit', () => {
         .simulate('change', {
           target: { value: '1234567891' },
         })
-      expect(onInputChangeSpy).toHaveBeenCalledWith('cell_phone_number', '1234567891')
+      expect(onInputChangeSpy).toHaveBeenCalledWith('cell_phone_number', 1234567891)
     })
 
     it('#CellPhoneNumber, handleInputChange function is called & returns ext with zeros', () => {
@@ -279,7 +289,17 @@ describe('UserDetailEdit', () => {
         .simulate('change', {
           target: { value: '1000000000' },
         })
-      expect(onInputChangeSpy).toHaveBeenCalledWith('cell_phone_number', '1000000000')
+      expect(onInputChangeSpy).toHaveBeenCalledWith('cell_phone_number', 1000000000)
+    })
+
+    it('#CellPhoneNumber, handleInputChange function is called & returns empty if not numbers are provided', () => {
+      wrapper
+        .find('InputComponent')
+        .at(3)
+        .simulate('change', {
+          target: { value: 'asdfasd' },
+        })
+      expect(onInputChangeSpy).toHaveBeenCalledWith('cell_phone_number', '')
     })
   })
 })

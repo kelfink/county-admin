@@ -14,7 +14,7 @@ feature 'User Edit' do
     page_has_user_list_headers
     search_users(last_name: 'A')
     show_inactive_users
-    sleep 2
+    finished_loading
     first_user_url = first_user_link[:href]
     visit "#{first_user_url}BAD_EXTRA_CHARS"
     page_is_user_details
@@ -58,7 +58,6 @@ feature 'User Edit' do
 
     if selected_permissions.empty?
       add_permission 'RFA'
-      add_permission 'Snapshot'
       add_permission 'Hotline'
       add_permission 'Facility Search & Profile'
       save_and_confirm
@@ -67,7 +66,12 @@ feature 'User Edit' do
     puts "original selected permissions #{original_selected_permissions}"
     one_permission = original_selected_permissions.last
     one_permission = '' if one_permission == 'Select...'
-
+    if one_permission == 'Snapshot'
+      # Do not remove Snapshot, since it is obsolete and can't be added back.
+      one_permission = original_selected_permissions.first
+      # Do not remove the deprecated permission 'Snapshot'
+      one_permission = '' if one_permission == 'Snapshot'
+    end
     # Edit both modifiable fields
     change_status new_status
     remove_permission(one_permission)
@@ -83,9 +87,6 @@ feature 'User Edit' do
     expect(status_from_dropdown)
       .to eq(new_status)
     # permissions has changed to new permissions
-
-    # xpath fails to find the span following the label if it's empty.
-    # Find the parent div instead and parse...
 
     string_permissions = selected_permissions.join(', ')
 
@@ -103,6 +104,7 @@ feature 'User Edit' do
       one_permission = 'Hotline'
       original_selected_permissions = ['Hotline']
     end
+
     add_permission(one_permission)
 
     save_and_confirm
@@ -132,9 +134,14 @@ feature 'User Edit' do
     expect(page).to have_button('SAVE', disabled: true)
 
     fill_in('Email', with: 'cwds3raval', match: :prefer_exact)
-    # bad email address won't let us proceed
-    expect(page).to have_button('SAVE', disabled: true)
-    expect(page).to have_content('Please enter a valid email')
+    # bad email address no longer validates, so we let the save button s stay enabled.
+    expect(page).to have_button('SAVE', disabled: false)
+
+    click_button 'SAVE'
+    sleep 2
+    click_button 'Confirm' if has_button? 'Confirm'
+
+    expect(page).to have_content('The email address you entered is in an invalid format')
 
     # correct the email to a proper address
     email_address = new_email_address

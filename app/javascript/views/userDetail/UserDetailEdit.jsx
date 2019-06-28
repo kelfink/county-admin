@@ -19,10 +19,8 @@ const UserDetailEdit = ({
   userStatusDescription,
   officeName,
   onInputChange,
-  isEmailValid,
   lastLoginDateTime,
   officePhoneNumber,
-  isPhoneNumberValid,
   unformattedPhoneNumber,
   phoneExtensionNumber,
   onResendInvite,
@@ -84,8 +82,6 @@ const UserDetailEdit = ({
                 placeholder="Add Email Address"
                 value={details.email}
                 onChange={event => onInputChange('email', event.target.value)}
-                validationError={!isEmailValid}
-                validationErrorMessage={'Please enter a valid email'}
               />
             </div>
             <div className="col-md-3">
@@ -110,9 +106,7 @@ const UserDetailEdit = ({
                 placeholder="Enter numbers only"
                 value={unformattedPhoneNumber}
                 allowCharacters={/^[0-9]*$/i}
-                onChange={event => onInputChange('phone_number', parseInt(event.target.value))}
-                validationError={!isPhoneNumberValid}
-                validationErrorMessage={'Please enter valid phone number'}
+                onChange={event => onInputChange('phone_number', parseInt(event.target.value) || '')}
                 maxLength={10}
               />
             </div>
@@ -137,7 +131,7 @@ const UserDetailEdit = ({
                 value={cellPhoneNumber}
                 maxLength={10}
                 allowCharacters={/^[0-9]*$/i}
-                onChange={event => onInputChange('cell_phone_number', event.target.value)}
+                onChange={event => onInputChange('cell_phone_number', parseInt(event.target.value) || '')}
               />
             </div>
           </div>
